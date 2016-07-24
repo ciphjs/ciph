@@ -22,16 +22,18 @@ class Client
         @options = _.extend {}, @options, options
         _.extend @, Backbone.Events
 
-        @on 'add:queue', @resolveOutgoing
+        @on 'add:queue open', @resolveOutgoing
         @on 'add:passkey', @resolveIncoming
-        @on 'open', @resolveOutgoing
 
-    connect: (url)->
+    run: (url)->
+        url = @options.url unless url
+
         @options.url = url
         @started = true
+
         @_ws = new WebSocket url
 
-        @_ws.on 'message', _.bind @onMessage, @
+        @_ws.on 'message', _.bind @onData, @
         @_ws.on 'close',   _.bind @reconnect, @
         @_ws.on 'open',    => @trigger 'open'
 
@@ -40,7 +42,7 @@ class Client
 
         @_rcto = setTimeout =>
             delete @_rcto
-            @connect @options.url
+            @run @options.url
         , @options.reconnect
 
     isConnected: ->
@@ -55,30 +57,11 @@ class Client
     getKey: (client)->
         return @clients[client]?.key
 
-    ready: (mes)->
-        @client_id = mes.query.client
-        @trigger 'ready', @client_id
-        @trigger 'add:room', mes.query.room
+    send: (receiver, data, callback)->
+        unless @isReadyClient()
+            return callback? 'no_client'
 
-    onMessage: (data)->
-        mes = url.parse data.toString(), true
-        return unless mes.protocol is 'ciph:'
-
-        if host is 'tunnel' and mes.pathname is '/created'
-            return @ready mes
-
-        # Service methods
-        switch mes.pathname
-            when '/hello' then return @hello mes, mes.auth
-            when '/ecdh'  then return @ecdh  mes, mes.auth, mes.query
-
-        # Messenger methods
-        switch mes.pathname
-            when '/m' then return @message mes
-
-    send: (room, data)->
-        # TODO: passkey for encrypt
-        cipher = crypto.createCipher @options.cipher, key
+        cipher = crypto.createCipher @options.cipher, @clients[receiver].key
         encrypted = ''
 
         cipher.on 'readable', ->
@@ -86,17 +69,35 @@ class Client
             encrypted += chunk.toString 'hex' if chunk
 
         cipher.on 'end', =>
-            @_send room, '/m', m: encrypted
+            @_send receiver, '/m', m: encrypted
+            callback?()
 
         cipher.write data
         cipher.end()
 
-    _send: (room, method, params)->
+    hello: (recover, callback)->
+        unless @isReadyClient()
+            return callback? 'already_exsists'
+
+        @_send receiver, '/hello'
+
+    connect: (client)->
+        params = {}
+        params.client = @client_id if @client_id
+        params.client = client     if client
+
+        @_send 'tunnel', '/connect', params
+
+    start: (url, client)->
+        @run url unless @started
+        @connect client
+
+    _send: (receiver, method, params)->
         res = url.format
             protocol: 'ciph:'
             slashes: true
             auth: @client_id
-            host: room
+            host: receiver
             pathname: method
             query: params or null
 
@@ -116,7 +117,30 @@ class Client
                 @message mes
                 @_outQueue = _.without @_outQueue, mes
 
-    hello: (mes, client)->
+    onData: (data)->
+        mes = url.parse data.toString(), true
+        return unless mes.protocol is 'ciph:'
+
+        if host is 'tunnel' and mes.pathname is '/created'
+            return @onReady mes
+
+        if mes.host isnt @client_id
+            return
+
+        # Service methods
+        switch mes.pathname
+            when '/hello' then return @onHello mes, mes.auth
+            when '/ecdh'  then return @onECDH  mes, mes.auth, mes.query
+
+        # Messenger methods
+        switch mes.pathname
+            when '/m'     then return @onMessage mes
+
+    onReady: (mes)->
+        @client_id = mes.query.client
+        @trigger 'ready', @client_id
+
+    onHello: (mes, client)->
         ecdh = crypto.createECDH @options.curve
         pkey = ecdh.generateKeys()
 
@@ -124,29 +148,29 @@ class Client
             ecdh: ecdh
             key:  null
 
-        @send mes.room, '/ecdh', k: pkey
+        @send client, '/ecdh', k: pkey
         @trigger 'add:client', client
 
-    ecdh: (mes, client, params)->
+    onECDH: (mes, client, params)->
         return unless params.k
 
         # If no client
-        @hello mes, auth unless @clients[client]
+        @onHello mes, auth unless @clients[client]
 
         # If no ECDH instance
         unless @clients[client].ecdh
             ecdh = crypto.createECDH @options.curve
             pkey = ecdh.generateKeys()
             @clients[client].ecdh = ecdh
-            @send mes.room, '/ecdh', k: pkey
+            @send client, '/ecdh', k: pkey
 
         passkey = @clients[client].ecdh.computeSecret params.k
         @clients[client].key = passkey
 
         @trigger 'add:passkey', client, passkey
-        @trigger 'change:client', client
+        @trigger 'ready:client', client
 
-    message: (mes)->
+    onMessage: (mes)->
         return unless mes.query?.m
         return @_outQueue.push mes unless @isReadyClient mes.auth
 
@@ -162,17 +186,6 @@ class Client
 
         decipher.write mes.query.m, 'hex'
         decipher.end()
-
-    room: (id)->
-        params = {}
-        params.room   = id if id
-        params.client = @client_id if @client_id
-
-        @_send 'tunnel', '/connect_room', params
-
-    start: (room, url)->
-        @connect url unless @started
-        @room room
 
 
 module.exports = Client

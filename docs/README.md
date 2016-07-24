@@ -65,35 +65,35 @@ Example for tunnel: `ciph://tunnel/new_room`
 
 ### Tunnel methods
 
-#### /connect_room
+#### /connect
 
-`ciph://tunnel/connect_room?room={room_id}&client={client_id}`
+`ciph://tunnel/connect?client={client_id}`
 
-Request tunnel server for connect to room. Server response message with method `/created`.
-**room** and **client** paremeters not required. If desired, the server generates them automatically, and send in `/created`.
+Request tunnel server for connect. Server response message with method `/created`.
+**client** paremeter not required. If necessary or **client** already exists, server sends new **client_id** with method ``/created`.
 
 #### /created
 
-`ciph://tunnel/created?room={room_id}&client={client_id}`
+`ciph://tunnel/created?client={client_id}`
 
-Tunnel response after room creation. Return **room** and **client** parameters.
+Tunnel response after connection. Return **client** parameter.
 
-### Room methods
+### Chat methods
 
 #### /hello
 
-`ciph://{client_id}@{room_id}/hello`
+`ciph://{sender_id}@{receiver_id}/hello`
 
 Announce client in room, after `/hello` from tunnel.
 
 #### /ecdh
 
-`ciph://{client_id}@{room_id}/ecdh?k={pubkey}`
+`ciph://{sender_id}@{receiver_id}/ecdh?k={pubkey}`
 
 Send Diffie Hellman Alice data.
 
 #### /m
 
-`ciph://{client_id}@{room_id}/m?m={crypted_message}`
+`ciph://{sender_id}@{receiver_id}/m?m={crypted_message}`
 
 Send crypted message.
