@@ -61,42 +61,39 @@ Send status of participant.
 Message scheme (like URL): `ciph://{client}@{room_or_tunnel}/{method}?{data}`
 
 Example: `ciph://11111@123124/message?m=1231kljlk1j23l1kji1j23o12j3o1i2j31o2i3j2oi3j2`
-Example for tunnel: `ciph://11111@tunnel/new_room`
+Example for tunnel: `ciph://tunnel/new_room`
 
 ### Tunnel methods
 
-#### /new_room
-
-Request tunnel server for create new room. Server response message with method `/hello`.
-
 #### /connect_room
 
-`ciph://11111@tunnel/connect_room?id={room_id}`
+`ciph://tunnel/connect_room?room={room_id}&client={client_id}`
 
-Request tunnel server for connect to room. Server response message with method `/hello`.
+Request tunnel server for connect to room. Server response message with method `/created`.
+**room** and **client** paremeters not required. If desired, the server generates them automatically, and send in `/created`.
+
+#### /created
+
+`ciph://tunnel/created?room={room_id}&client={client_id}`
+
+Tunnel response after room creation. Return **room** and **client** parameters.
 
 ### Room methods
 
 #### /hello
 
-`ciph://11111@{room_id}/hello`
+`ciph://{client_id}@{room_id}/hello`
 
-Response from tunnel, if you connected to some room
+Announce client in room, after `/hello` from tunnel.
 
-#### /dh_a
+#### /ecdh
 
-`ciph://11111@{room_id}/dh_a?g={prime}&p={generator}&a={pubkey}`
+`ciph://{client_id}@{room_id}/ecdh?k={pubkey}`
 
 Send Diffie Hellman Alice data.
 
-#### /dh_b
-
-`ciph://11111@{room_id}/dh_b?b={pubkey}`
-
-Send Diffie Hellman Bob data.
-
 #### /m
 
-`ciph://11111@{room_id}/m?m={crypted_message}`
+`ciph://{client_id}@{room_id}/m?m={crypted_message}`
 
 Send crypted message.
