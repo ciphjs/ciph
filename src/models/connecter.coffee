@@ -4,7 +4,7 @@ crypto    = require('crypto')
 Backbone  = require('backbone')
 WebSocket = require('ws')
 
-class Client
+class Connecter
     options:
         url: 'wss://ciph.nim.space/tunnel'
         curve: 'secp521r1'
@@ -182,10 +182,10 @@ class Client
             decrypted += chunk.toString 'utf8' if chunk
 
         decipher.on 'end', =>
-            @trigger 'message', mes.host, decrypted
+            @trigger 'message', mes.auth, decrypted
 
         decipher.write mes.query.m, 'hex'
         decipher.end()
 
 
-module.exports = Client
+module.exports = Connecter
