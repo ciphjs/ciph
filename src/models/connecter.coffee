@@ -57,7 +57,7 @@ class Connecter
     getKey: (client)->
         return @clients[client]?.key
 
-    send: (receiver, data, callback)->
+    send: (receiver, data, force=false, callback)->
         unless @isReadyClient()
             return callback? 'no_client'
 
@@ -69,7 +69,7 @@ class Connecter
             encrypted += chunk.toString 'hex' if chunk
 
         cipher.on 'end', =>
-            @_send receiver, '/m', m: encrypted
+            @_send receiver, '/m', m: encrypted, force
             callback?()
 
         cipher.write data
@@ -92,7 +92,7 @@ class Connecter
         @run url unless @started
         @connect client
 
-    _send: (receiver, method, params)->
+    _send: (receiver, method, params, force=false)->
         res = url.format
             protocol: 'ciph:'
             slashes: true
@@ -101,8 +101,12 @@ class Connecter
             pathname: method
             query: params or null
 
-        @_inQueue.push res
-        @trigger 'add:queue'
+        if force and @isConnected()
+            @_ws.send res
+
+        else
+            @_inQueue.push res
+            @trigger 'add:queue'
 
     resolveOutgoing: ->
         return unless @isConnected()

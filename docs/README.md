@@ -7,10 +7,7 @@
 ```
 {
     "id": "11111-123135135-2312",
-    "client": 11111,
     "type": "message",
-    "user_name": "Nick Iv",
-    "user_id": "dev@nim579.ru",
     "data": "Hello world!"
 }
 ```
@@ -27,10 +24,7 @@ Send message status.
 
 ```
 {
-    "client": 11112,
     "type": "status",
-    "user_name": "Nick Iv",
-    "user_id": "dev@nim579.ru",
     "data": {
         "message_id": "11111-123135135-2312",
         "status": 0
@@ -48,11 +42,12 @@ Send status of participant.
 
 ```
 {
-    "client": 11111,
     "type": "heartbeat",
-    "user_name": "Nick Iv",
-    "user_id": "dev@nim579.ru"
-    "data": null
+    "data": {
+        "status": "online"
+        "user_name": "Nick Iv",
+        "user_id": "dev@nim579.ru"
+    }
 }
 ```
 
