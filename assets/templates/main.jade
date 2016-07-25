@@ -1,0 +1,10 @@
+.bLayout
+    if !id
+        .bStarter(data-partial="Starter", data-source="messenger")
+
+    else
+        aside.bLayout__eAside.bContacts
+            .bContacts__eControls(data-partial="NewContact", data-source="messenger")
+            .bContacts__eList(data-partial="ContactList", data-source="messenger/clients")
+
+        article.bLayout__eArticle.bMessenger(data-partial="Messenger", data-source="client")

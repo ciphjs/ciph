@@ -1,0 +1,13 @@
+include ./includes/logo
+
+form.bForm
+    input.bForm__eInput(placeholder="Your name", value=user_name, name="user_name")
+    input.bForm__eInput(placeholder="Gravatar ID", value=user_id, name="user_id")
+
+    .bForm__eExtended.jsAdvanced
+        span.bForm__eExtendedLabel.jsToggleAdvanced Advanced options
+        .bForm__eExtendedFields
+            input.bForm__eInput(placeholder="Custom ID", value=id || last_id, name="id")
+            input.bForm__eInput(placeholder="Tunnel URL", value=url, name="url")
+
+    button.bForm__eButton(type="submit") Start

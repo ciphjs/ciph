@@ -1,0 +1,11 @@
+@color1: #FFFFFF;
+@color2: #000000;
+
+.iconSVG(@uri, @fill, @fill-default: #000000) {
+    @escape-fill-default: escape(@fill-default);
+            @escape-fill: escape(@fill);
+
+    @data-uri: data-uri('image/svg+xml;charset=UTF-8', "../images/@{uri}.svg");
+    @replace-src: replace("@{data-uri}", "@{escape-fill-default}", "@{escape-fill}", "gi");
+    background-image: e(@replace-src);
+}

@@ -6,9 +6,11 @@
 
 ```
 {
-    "id": "11111-123135135-2312",
     "type": "message",
-    "data": "Hello world!"
+    "data": {
+        "id": "11111-123135135-2312"
+        "text": "Hello world!"
+    }
 }
 ```
 
@@ -64,22 +66,28 @@ Example for tunnel: `ciph://tunnel/new_room`
 
 `ciph://tunnel/connect?client={client_id}`
 
-Request tunnel server for connect. Server response message with method `/created`.
-**client** paremeter not required. If necessary or **client** already exists, server sends new **client_id** with method ``/created`.
+Request tunnel server for connect. Server response message with method `/connected`.
+**client** paremeter not required. If necessary or **client** already exists, server sends new **client_id** with method `/connected`.
 
-#### /created
+#### /rename
 
-`ciph://tunnel/created?client={client_id}`
+`ciph://tunnel/rename?client={client_id}`
 
-Tunnel response after connection. Return **client** parameter.
+Request rename tunnel
+
+#### /connected
+
+`ciph://tunnel/connected?client={client_id}&exists={true|false}`
+
+Tunnel response after connection. Return new *client_id* in **client** parameter. Return `exists=true` if requested *client_id* already exists.
 
 ### Chat methods
 
 #### /hello
 
-`ciph://{sender_id}@{receiver_id}/hello`
+`ciph://{sender_id}@{receiver_id}/hello?old_name={old_sender_id}`
 
-Announce client in room, after `/hello` from tunnel.
+Announce client, for start chat with new client. Return old id, if was renamed.
 
 #### /ecdh
 

@@ -1,0 +1,77 @@
+.bLogo {
+    position: relative;
+    display: inline-block;
+    width: 150px;
+    height: 150px;
+    margin-bottom: 40px;
+
+    &__eBG {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        background: url('images/logo_bg.svg') no-repeat;
+        background-size: 150px;
+        background-position: center;
+
+        z-index: 1;
+    }
+    &__eL {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        background-repeat: no-repeat;
+        background-size: 150px;
+        background-position: center;
+
+        &.m1 {
+            background-image: url('images/logo_l1.svg');
+            z-index: 2;
+        }
+        &.m2 {
+            background-image: url('images/logo_l2.svg');
+            z-index: 3;
+        }
+        &.m3 {
+            background-image: url('images/logo_l3.svg');
+            z-index: 4;
+        }
+        &.m4 {
+            background-image: url('images/logo_l4.svg');
+            z-index: 5;
+        }
+    }
+
+    &.mFull {
+        background: url('images/logo.svg') no-repeat;
+        background-size: 256px;
+        background-position: center;
+    }
+    &.mAnimated {
+        .bLogo__eL.m1 {animation: logo_r 5s 2s infinite;}
+        .bLogo__eL.m2 {animation: logo_l 4s 3s infinite;}
+        .bLogo__eL.m3 {animation: logo_r 3s 4s infinite;}
+        .bLogo__eL.m4 {animation: logo_l 2s 5s infinite;}
+    }
+    @keyframes logo_r {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    @keyframes logo_l {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(-360deg);
+        }
+    }
+}

@@ -2,7 +2,6 @@ _         = require('underscore')
 url       = require('url')
 crypto    = require('crypto')
 Backbone  = require('backbone')
-WebSocket = require('ws')
 
 class Connecter
     options:
@@ -14,8 +13,8 @@ class Connecter
     started:    false
     clients:    {}
     client_id:  null
-    _inQueue:   []
-    _outQueue:  []
+    _inQueue:   []  # Income messages
+    _outQueue:  []  # Outgoing messages
     _ws:        null
 
     constructor: (options)->
@@ -33,9 +32,12 @@ class Connecter
 
         @_ws = new WebSocket url
 
-        @_ws.on 'message', _.bind @onData, @
-        @_ws.on 'close',   _.bind @reconnect, @
-        @_ws.on 'open',    => @trigger 'open'
+        # @_ws.on 'message', _.bind @onData, @
+        # @_ws.on 'close',   _.bind @reconnect, @
+        # @_ws.on 'open',    => @trigger 'open'
+        @_ws.onmessage = _.bind @onData, @
+        @_ws.onclose   = _.bind @reconnect, @
+        @_ws.onopen    = => @trigger 'open'
 
     reconnect: ->
         clearTimeout @_rcto if @_rcto
@@ -58,7 +60,7 @@ class Connecter
         return @clients[client]?.key
 
     send: (receiver, data, force=false, callback)->
-        unless @isReadyClient()
+        unless @isReadyClient receiver
             return callback? 'no_client'
 
         cipher = crypto.createCipher @options.cipher, @clients[receiver].key
@@ -75,10 +77,7 @@ class Connecter
         cipher.write data
         cipher.end()
 
-    hello: (recover, callback)->
-        unless @isReadyClient()
-            return callback? 'already_exsists'
-
+    hello: (receiver, callback)->
         @_send receiver, '/hello'
 
     connect: (client)->
@@ -105,27 +104,32 @@ class Connecter
             @_ws.send res
 
         else
-            @_inQueue.push res
+            @_outQueue.push res
             @trigger 'add:queue'
 
     resolveOutgoing: ->
         return unless @isConnected()
 
-        for mes in @_inQueue
+        for mes in @_outQueue
+            console.log 'mes', mes
             @_ws.send mes
-            @_inQueue = _.without @_inQueue, mes
+            @_outQueue = _.without @_outQueue, mes
 
     resolveIncoming: ->
-        for mes in @_outQueue
+        for mes in @_inQueue
             if @isReadyClient mes.auth
-                @message mes
-                @_outQueue = _.without @_outQueue, mes
+                @onMessage mes
+                @_inQueue = _.without @_inQueue, mes
 
     onData: (data)->
-        mes = url.parse data.toString(), true
-        return unless mes.protocol is 'ciph:'
+        data = data.data if data.data
+        mes = null
+        console.log 'income', data
 
-        if host is 'tunnel' and mes.pathname is '/created'
+        try mes = url.parse data.toString(), true
+        return if not mes or mes.protocol isnt 'ciph:'
+
+        if mes.host is 'tunnel' and mes.pathname is '/connected'
             return @onReady mes
 
         if mes.host isnt @client_id
@@ -142,41 +146,42 @@ class Connecter
 
     onReady: (mes)->
         @client_id = mes.query.client
-        @trigger 'ready', @client_id
+        @trigger 'ready', @client_id, mes.query.exists
 
     onHello: (mes, client)->
         ecdh = crypto.createECDH @options.curve
         pkey = ecdh.generateKeys()
+        console.log ecdh, pkey
 
         @clients[client] =
             ecdh: ecdh
             key:  null
 
-        @send client, '/ecdh', k: pkey
+        @_send client, '/ecdh', k: pkey.toString('hex')
         @trigger 'add:client', client
 
     onECDH: (mes, client, params)->
         return unless params.k
 
         # If no client
-        @onHello mes, auth unless @clients[client]
+        @onHello mes, client unless @clients[client]
 
         # If no ECDH instance
         unless @clients[client].ecdh
             ecdh = crypto.createECDH @options.curve
             pkey = ecdh.generateKeys()
             @clients[client].ecdh = ecdh
-            @send client, '/ecdh', k: pkey
+            @_send client, '/ecdh', k: pkey
 
-        passkey = @clients[client].ecdh.computeSecret params.k
-        @clients[client].key = passkey
+        passkey = @clients[client].ecdh.computeSecret params.k, 'hex'
+        @clients[client].key = passkey.toString('hex')
 
         @trigger 'add:passkey', client, passkey
         @trigger 'ready:client', client
 
     onMessage: (mes)->
         return unless mes.query?.m
-        return @_outQueue.push mes unless @isReadyClient mes.auth
+        return @hello mes.auth unless @isReadyClient mes.auth
 
         decipher = crypto.createDecipher @options.cipher, @getKey mes.auth
         decrypted = ''

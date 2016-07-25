@@ -1,18 +1,21 @@
 _         = require('underscore')
+crypto    = require('crypto')
 Backbone  = require('backbone')
 Connecter = require('./connecter')
-{Clients} = require('clients')
+{Clients} = require('./clients')
 
 class Messenger extends Backbone.Model
-    defaults:
+    defaults: ->
         id: null
-        url: null
-        user_name: 'Anonimus'
+        url: 'wss://ciph.nim.space/tunnel'
+        user_name: null
         user_id: null
+        gravatar: null
         status: 'offline'
+        heartbeat_time: 10000
         clients: new Clients()
 
-    constructor: ->
+    initialize: ->
         @connecter = new Connecter()
         @get('clients').messenger = @
 
@@ -20,12 +23,11 @@ class Messenger extends Backbone.Model
         @listenTo @connecter, 'ready:client', @addClient
         @listenTo @connecter, 'message',      @onMessage
 
-    start: (id, url)->
-        @set
-            id:  if id then id
-            url: if url then url
+        @on 'change:user_id', @setGravatar
 
-        @connecter.start url, id
+    start: (id, url)->
+        @set 'url', url if url
+        @connecter.start @get('url'), id
 
     connect: (client_id, callback)->
         @connecter.hello client_id, callback
@@ -34,7 +36,7 @@ class Messenger extends Backbone.Model
         @connecter.send client_id, JSON.stringify(data), force, callback
 
     sendAll: (data, force=false)->
-        @get('clients').each (client)->
+        @get('clients').each (client)=>
             @send client.id, data, force
 
     message: (client_id, message, callback)->
@@ -62,12 +64,32 @@ class Messenger extends Backbone.Model
 
         , true
 
-    onReady: (id)->
+    # TODO: rename method
+
+    setGravatar: ->
+        if id = @get('user_id')
+            md5 = crypto.createHash 'md5'
+            md5.update id
+            hash = md5.digest 'hex'
+
+            @set 'gravatar', "https://www.gravatar.com/avatar/#{hash}?s=200&d=identicon"
+
+    onReady: (id, exists=false)->
+        # TODO: if exists
         @set id: id, status: 'online'
-        # @startHeartbeat()
+        @startHeartbeat()
+
+    startHeartbeat: ->
+        clearInterval @_heartbeatTO if @_heartbeatTO
+        @_heartbeatTO = setInterval =>
+            @heartbeat()
+        , @get('heartbeat_time')
+
+        @heartbeat()
 
     addClient: (client_id)->
         @get('clients').add id: client_id
+        @heartbeat()
 
     onMessage: (client_id, data)->
         try
@@ -78,9 +100,13 @@ class Messenger extends Backbone.Model
 
         if client = @get('clients').get client_id
             switch message.type
-                when 'message'   then client.addMessage message
-                when 'status'    then client.setMessageStatus message
-                when 'heartbeat' then client.heartbeat message
+                when 'message'   then client.addMessage message.data
+                when 'status'    then client.setMessageStatus message.data
+                when 'heartbeat' then client.heartbeat message.data
 
+    toJSON: ->
+        data = super
+        data.clients = @get('clients').length
+        return data
 
 module.exports = Messenger
