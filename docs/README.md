@@ -29,14 +29,14 @@ Send message status.
     "type": "status",
     "data": {
         "message_id": "11111-123135135-2312",
-        "status": 0
+        "status": "delivered"
     }
 }
 ```
 
 Statuses:
-- `0` – received
-- `1` — readed
+- delivered
+- readed
 
 **heartbeat**
 

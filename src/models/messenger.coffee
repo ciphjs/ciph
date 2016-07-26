@@ -45,7 +45,9 @@ class Messenger extends Backbone.Model
             data: message
         , false, callback
 
-    status: (client_id, message_id, statu=0)->
+    status: (client_id, message_id, status)->
+        return if not client_id or not message_id or not status
+
         @send client_id,
             type: "status"
             data:
@@ -64,7 +66,7 @@ class Messenger extends Backbone.Model
 
         , true
 
-    # TODO: rename method
+    # TODO: "rename" method
 
     setGravatar: ->
         if id = @get('user_id')
@@ -75,8 +77,8 @@ class Messenger extends Backbone.Model
             @set 'gravatar', "https://www.gravatar.com/avatar/#{hash}?s=200&d=identicon"
 
     onReady: (id, exists=false)->
-        # TODO: if exists
         @set id: id, status: 'online'
+        @trigger 'ready'
         @startHeartbeat()
 
     startHeartbeat: ->

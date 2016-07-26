@@ -5,6 +5,10 @@
     margin-bottom: 40px;
     box-sizing: border-box;
 
+    max-height: 100vh;
+    overflow: hidden;;
+    transition: 2.5s 2.5s;
+
     &__eInput {
         display: block;
         width: 100%;
@@ -87,5 +91,10 @@
                 overflow: auto;
             }
         }
+    }
+
+    &.mHidden {
+        max-height: 0;
+        opacity: 0;
     }
 }

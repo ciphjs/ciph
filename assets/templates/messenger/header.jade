@@ -1,0 +1,12 @@
+- var name = user_name || 'Anonimus'
+
+.bMessenger__eHeaderBack.jsToAside.mMobileShow
+
+.bMessenger__eHeaderName #{name}
+
+.bMessenger__eHeaderPic
+    if gravatar
+        img.bMessenger__eHeaderPicImage(src=gravatar)
+
+    else
+        .bMessenger__eHeaderPicAbbr #{name.slice(0,1)}

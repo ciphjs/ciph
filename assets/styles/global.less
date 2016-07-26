@@ -8,10 +8,14 @@ html, body {
     overflow: hidden;
 
     font-size: 10px;
-    font-family: "Helvetica Neue", "San Francisco", "Arial", sans-serif;
+    font-family: -apple-system,BlinkMacSystemFont,Roboto,Open Sans,Helvetica Neue,sans-serif;
 
     background: @color1;
     color: @color2;
+
+    -webkit-font-smoothing: antialiased;
+         -o-font-smoothing: antialiased;
+            font-smoothing: antialiased;
 }
 
 @import "bLayout.less";

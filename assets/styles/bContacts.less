@@ -17,11 +17,11 @@
 
     &__eControls {
         display: block;
-        border-bottom: 1px solid lighten(@color2, 50%);
+        border-bottom: 1px solid transparent;
     }
     &__eAddContact {
         display: flex;
-        margin: 12px 20px 20px;
+        margin: 10px 20px;
 
         &Input {
             display: block;
@@ -90,7 +90,7 @@
         &Wrap {
             display: block;
             list-style-type: none;
-            margin: 20px 0;
+            margin: 0 0 20px 0;
             padding: 0;
         }
     }
@@ -98,7 +98,6 @@
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
-        align-items: center;
         padding: 10px 20px;
 
         color: @color1;
@@ -111,6 +110,7 @@
             align-self: flex-start;
             width: 50px;
             height: 50px;
+            min-width: 50px;
 
             &Image {
                 display: block;
@@ -118,7 +118,6 @@
                 height: 100%;
                 vertical-align: top;
                 border-radius: 40px;
-                border: 1px solid lighten(@color2, 50%);
                 overflow: hidden;
             }
             &Abbr {
@@ -129,7 +128,6 @@
                 box-sizing: border-box;
                 vertical-align: top;
                 border-radius: 40px;
-                border: 1px solid lighten(@color2, 50%);
                 overflow: hidden;
 
                 background-color: lighten(@color2, 50%);
@@ -145,13 +143,16 @@
         &Status {
             position: absolute;
             top: 0;
-            right: 0;
+            left: : 0;
             width: 10px;
             height: 10px;
 
             border-radius: 10px;
-            background-color: #c2c2c2;
+            border: 2px solid @color2;
+            background-color: #aaaaaa;
             box-shadow: 0 0 7px fade(@color2, 50%) inset;
+
+            transition: all 0.4s;
 
             &.mStatus {
                 &_offline {
@@ -162,20 +163,78 @@
                 }
             }
         }
-        &Name {
+        &Unread {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 8px;
+            min-height: 8px;
+            padding: 4px;
+
+            border-radius: 12px;
+            background-color: #ed4645;
+            box-shadow: 0 0 2px 1px @color2, 80%;
+
+            font-size: 8px;
+            font-weight: 500;
+            color: @color1;
+            text-align: center;
+            line-height: 8px;
+        }
+        &Body {
             display: block;
+            flex: 1 1 auto;
+            align-self: center;
+            min-width: 0;
             margin-left: 1.5rem;
             font-size: 1.5rem;
+            word-wrap: break-word;
 
             &ID {
+                display: inline-block;
+                margin-left: 0.8em;
+                padding: 2px 5px;
+
+                border-radius: 3px;
+                background-color: @color1;
+
+                font-size: 0.8rem;
+                font-weight: 300;
+
+                color: @color2;
+                text-transform: uppercase;
+                letter-spacing: 0.12em;
+
+                vertical-align: middle;
+                transition: 0.4s;
+            }
+            &Message {
                 display: block;
-                font-size: 1.2rem;
-                opacity: 0.5;
+                margin-top: 0.3em;
+                font-size: 1.3rem;
+                opacity: 0.7;
             }
         }
 
         &:hover {
-            background-color: lighten(@color2, 25%);
+            background-color: lighten(@color2, 20%);
+
+            .bContacts__eClientStatus {
+                border-color: lighten(@color2, 20%);
+            }
+        }
+
+        &.mActive {
+            background-color: @color1;
+            color: @color2;
+
+            .bContacts__eClientBodyID {
+                background-color: @color2;
+                color: @color1;
+            }
+            .bContacts__eClientStatus {
+                border-color: @color1;
+            }
         }
     }
 }

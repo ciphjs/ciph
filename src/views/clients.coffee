@@ -30,6 +30,46 @@ class Contact extends CollectionItemView
     Views: -> Views
     template: -> AppTemplates.ContactsClient
 
+    events: ->
+        "click": "openClient"
+
+    _bindData: ->
+        super
+        @listenTo @model, 'change:client', @_selectClient
+        @listenTo @_getDataSource().get('messages'), 'add change remove', @render
+
+    _prepareData: ->
+        data = super
+        data.message = data.messages.last()?.toJSON()
+
+        unread = data.messages.filter (model)->
+            return not model.get('self') and model.get('status') isnt 'readed'
+
+        data.unread = unread.length or 0
+
+        if data.message and data.message.text
+            data.message.text = data.message.text.replace(/<[^>]*?[^>]*?>/gi, ' ').replace(/\s{2,}/, ' ')
+
+        data.current_client = @model.get('client')?.get('id')
+
+        return data
+
+    openClient: (e)->
+        e?.preventDefault()
+        id = $(e.currentTarget).data 'id'
+        @model.openClient id
+        $('.jsLayout').removeClass 'mAside'
+
+    _selectClient: ->
+        @$el.removeClass 'mActive'
+        return unless @model.get('client')
+
+        currentClient = @model.get('client').get('id')
+        thisClient    = @_getDataSource().get('id')
+
+        if currentClient is thisClient
+            @$el.addClass 'mActive'
+
 
 _.extend Views,
     NewContact: NewContact

@@ -2,7 +2,7 @@ $        = require('jquery')
 _        = require('underscore')
 Backbone = require('backbone')
 
-Views    = require('./clients')
+Views    = _.extend {}, require('./clients'), require('./messages')
 {ModelView} = require('./views')
 
 class MainView extends ModelView
@@ -17,6 +17,13 @@ class MainView extends ModelView
         source = @_getDataSource()
         @listenToOnce source, 'change:id', @render unless source.id
 
+    events:
+        "click .jsToAside": "toAside"
+
+    toAside: ->
+        console.log 'setar'
+        @$('.jsLayout').addClass 'mAside'
+
 
 class StarterView extends ModelView
     Views: -> Views
@@ -29,6 +36,8 @@ class StarterView extends ModelView
     initialize: ->
         @on 'render', ->
             @$('input').eq(0).focus()
+            _.defer => @$('.jsLogo').removeClass('mHidden').addClass 'mAnimated'
+            _.defer => @$('.jsForm').removeClass 'mHidden'
 
         super
 
@@ -36,7 +45,7 @@ class StarterView extends ModelView
         @$('.jsAdvanced').toggleClass 'mOpen'
 
     submit: (e)->
-        e.preventDefault()
+        e?.preventDefault()
 
         data = @$('form').serializeArray()
         readyData = {}

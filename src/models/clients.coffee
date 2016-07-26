@@ -15,6 +15,8 @@ class Client extends Backbone.Model
 
     initialize: ->
         @get('messages').messenger = @collection.messenger
+        @get('messages').client    = @
+
         @on 'change:user_id', @setGravatar
 
     addMessage: (message)->
@@ -26,7 +28,9 @@ class Client extends Backbone.Model
         @collection.messenger.message @id,
             id:   message.get('id')
             text: message.get('text')
-        , callback
+
+        , ->
+            message.set 'status', 'sent'
 
     setMessageStatus: (message)->
         return unless message?.message_id

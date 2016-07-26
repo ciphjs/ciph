@@ -1,6 +1,12 @@
-.bLogo.mAnimated
-    .bLogo__eBG
-    .bLogo__eL.m1
-    .bLogo__eL.m2
-    .bLogo__eL.m3
-    .bLogo__eL.m4
+mixin logo(hidden, animated, mini)
+    .bLogo.jsLogo(
+        class=!!hidden ? "mHidden" : ""
+        class=!!animated ? "mAnimated" : ""
+        class=animated == 'fast' ? "mFast" : ""
+        class=!!mini ? "mMini" : ""
+    )
+        .bLogo__eBG
+        .bLogo__eL.m1
+        .bLogo__eL.m2
+        .bLogo__eL.m3
+        .bLogo__eL.m4

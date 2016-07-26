@@ -1,0 +1,10 @@
+if id && !empty
+    .bMessenger__eHeader(data-partial="MessengerHeader", data-source="client")
+    .bMessenger__eMessages(data-partial="Messages", data-source="client/messages")
+    .bMessenger__eSend(data-partial="MessengerSend", data-source="client/messages")
+
+else
+    .bMessenger__eHeader.mMobileShow
+        .bMessenger__eHeaderBack.jsToAside
+
+    .bMessenger__eDummy(data-partial="MessengerDummy", data-source="messenger")

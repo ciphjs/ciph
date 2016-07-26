@@ -5,6 +5,8 @@
     height: 150px;
     margin-bottom: 40px;
 
+    transition: all 1s;
+
     &__eBG {
         position: absolute;
         top: 0;
@@ -29,6 +31,9 @@
         background-size: 150px;
         background-position: center;
 
+        transition: transform 2s;
+        transform: rotate(0);
+
         &.m1 {
             background-image: url('images/logo_l1.svg');
             z-index: 2;
@@ -49,14 +54,39 @@
 
     &.mFull {
         background: url('images/logo.svg') no-repeat;
-        background-size: 256px;
+        background-size: 150px;
         background-position: center;
     }
     &.mAnimated {
-        .bLogo__eL.m1 {animation: logo_r 5s 2s infinite;}
-        .bLogo__eL.m2 {animation: logo_l 4s 3s infinite;}
-        .bLogo__eL.m3 {animation: logo_r 3s 4s infinite;}
-        .bLogo__eL.m4 {animation: logo_l 2s 5s infinite;}
+        .bLogo__eL.m1 {animation: logo_r 5s 4s infinite;}
+        .bLogo__eL.m2 {animation: logo_l 4s 5s infinite;}
+        .bLogo__eL.m3 {animation: logo_r 3s 6s infinite;}
+        .bLogo__eL.m4 {animation: logo_l 2s 7s infinite;}
+
+        &.mFast .bLogo__eL {
+            animation-delay: 0s;
+        }
+    }
+    &.mHidden {
+        opacity: 0;
+        transform: scale(0.1);
+        .bLogo__eL.m4 {transform: rotate(360deg);}
+        .bLogo__eL.m3 {transform: rotate(720deg);}
+        .bLogo__eL.m2 {transform: rotate(1080deg);}
+        .bLogo__eL.m1 {transform: rotate(1440deg);}
+    }
+    &.mMini {
+        width: 70px;
+        height: 70px;
+        margin: 0;
+
+        &.mFull {
+            background-size: 70px;
+        }
+
+        .bLogo__eBG, .bLogo__eL {
+            background-size: 70px;
+        }
     }
     @keyframes logo_r {
         0% {

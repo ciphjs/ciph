@@ -1,0 +1,23 @@
+.bMessenger__eMessage(data-id=id)
+    - var name = client.user_name || 'Anonimus'
+    .bMessenger__eMessagePic
+        if client.gravatar
+            img.bMessenger__eMessagePicImage(src=client.gravatar)
+
+        else
+            .bMessenger__eMessagePicAbbr #{name.slice(0,1)}
+
+    .bMessenger__eMessageBody
+        .bMessenger__eMessageName
+            | #{name}#{self ? " (you)" : ""}
+            span.bMessenger__eMessageNameID= client.id
+
+        .bMessenger__eMessageText !{text}
+
+    .bMessenger__eMessageDate
+        != globals.moment(date).format('HH:mm:ss')
+
+        if self
+            //- .bMessenger__eMessageStatus(class="mStatus"+status)
+            br
+            != status.slice(0,1).toUpperCase()+status.slice(1)

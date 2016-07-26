@@ -19,6 +19,7 @@ node_modules
 
 .DS_Store
 
-tmp
-build
-app
+/tmp
+/build
+/app
+/package

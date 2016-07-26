@@ -32,9 +32,6 @@ class Connecter
 
         @_ws = new WebSocket url
 
-        # @_ws.on 'message', _.bind @onData, @
-        # @_ws.on 'close',   _.bind @reconnect, @
-        # @_ws.on 'open',    => @trigger 'open'
         @_ws.onmessage = _.bind @onData, @
         @_ws.onclose   = _.bind @reconnect, @
         @_ws.onopen    = => @trigger 'open'
@@ -72,7 +69,7 @@ class Connecter
 
         cipher.on 'end', =>
             @_send receiver, '/m', m: encrypted, force
-            callback?()
+            callback?() # TODO: callback on true send
 
         cipher.write data
         cipher.end()
@@ -101,18 +98,21 @@ class Connecter
             query: params or null
 
         if force and @isConnected()
-            @_ws.send res
+            @_wsSend res
 
         else
             @_outQueue.push res
             @trigger 'add:queue'
 
+    _wsSend: (mes)->
+        console.log 'mes', mes
+        @_ws.send mes
+
     resolveOutgoing: ->
         return unless @isConnected()
 
         for mes in @_outQueue
-            console.log 'mes', mes
-            @_ws.send mes
+            @_wsSend mes
             @_outQueue = _.without @_outQueue, mes
 
     resolveIncoming: ->
@@ -132,7 +132,7 @@ class Connecter
         if mes.host is 'tunnel' and mes.pathname is '/connected'
             return @onReady mes
 
-        if mes.host isnt @client_id
+        if mes.host isnt @client_id or mes.auth is @client_id
             return
 
         # Service methods
@@ -151,7 +151,6 @@ class Connecter
     onHello: (mes, client)->
         ecdh = crypto.createECDH @options.curve
         pkey = ecdh.generateKeys()
-        console.log ecdh, pkey
 
         @clients[client] =
             ecdh: ecdh

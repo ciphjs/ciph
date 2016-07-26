@@ -9,12 +9,21 @@ class Message extends Backbone.Model
         self: false
         status: null
 
-    setStatus: (status)->
-        if status is 0
-            @set 'status', 'received'
+    initialize: ->
+        super
+        @_changeStatus()
+        @on 'change:status', @_changeStatus
 
-        if status is 1
-            @set 'status', 'readed'
+    setStatus: (status)->
+        @set 'status', status
+
+    setReaded: ->
+        @set 'status', 'readed' unless @get('self')
+
+    _changeStatus: ->
+        if not @get('self') and @get('status') in ['delivered', 'readed']
+            client = @collection.client.get('id')
+            @collection.messenger.status client, @get('id'), @get('status')
 
 
 class Messages extends Backbone.Collection
@@ -27,10 +36,9 @@ class Messages extends Backbone.Collection
             date: new Date()
             id: @generateID()
             self: self
-            status: 'received'
-        , _.omit data,  'self'
+            status: unless self then 'delivered' else 'waiting'
+        , _.omit data, 'self'
 
-        # TODO: return status
         return @add message, merge: true
 
     generateID: ->

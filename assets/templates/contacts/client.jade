@@ -1,14 +1,22 @@
-li.bContacts__eClient(data-id=id)
+li.bContacts__eClient(data-id=id, class=id == current_client ? "mActive" : "")
     - var name = user_name || 'Anonimus'
     .bContacts__eClientPic
         if gravatar
             img.bContacts__eClientPicImage(src=gravatar)
 
         else
-            .bContacts__eClientPicAbbr(style="background-color: #"+id.slice(0,6)) #{name.slice(0,1)}
+            //- .bContacts__eClientPicAbbr(style="background-color: #"+id.slice(0,6)) #{name.slice(0,1)}
+            .bContacts__eClientPicAbbr #{name.slice(0,1)}
 
         .bContacts__eClientStatus(class="mStatus_"+status)
 
-    .bContacts__eClientName
-        | #{name}
-        span.bContacts__eClientNameID= id
+        if unread
+            .bContacts__eClientUnread= unread > 999 ? ">999" : unread
+
+    .bContacts__eClientBody
+        .bContacts__eClientName
+            | #{name}
+            span.bContacts__eClientBodyID= id
+
+        if message
+            .bContacts__eClientBodyMessage!= message.text.slice(0, 50)
