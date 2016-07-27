@@ -62,6 +62,10 @@ class Client extends Backbone.Model
             @set 'status', 'offline'
         , @get('wait_offline')
 
+    destroy: ->
+        @collection.remove @
+        @trigger 'destroy'
+
 
 class Clients extends Backbone.Collection
     model: Client

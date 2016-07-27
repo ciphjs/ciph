@@ -81,6 +81,9 @@ class Messenger extends Backbone.Model
         @trigger 'ready'
         @startHeartbeat()
 
+        @listenTo @connecter, 'open', ->
+            @connecter.connect()
+
     startHeartbeat: ->
         clearInterval @_heartbeatTO if @_heartbeatTO
         @_heartbeatTO = setInterval =>

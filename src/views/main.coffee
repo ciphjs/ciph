@@ -2,7 +2,7 @@ $        = require('jquery')
 _        = require('underscore')
 Backbone = require('backbone')
 
-Views    = _.extend {}, require('./clients'), require('./messages'), require('./preferences')
+Views    = _.extend {}, require('./clients'), require('./messages'), require('./preferences'), require('./system')
 {ModelView} = require('./views')
 
 class MainView extends ModelView

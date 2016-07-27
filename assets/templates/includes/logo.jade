@@ -4,7 +4,16 @@ mixin logo(hidden, animated, mini)
         class=!!animated ? "mAnimated" : ""
         class=animated == 'fast' ? "mFast" : ""
         class=!!mini ? "mMini" : ""
+        class=!!micro ? "mMicro" : ""
     )
+        .bLogo__eBG
+        .bLogo__eL.m1
+        .bLogo__eL.m2
+        .bLogo__eL.m3
+        .bLogo__eL.m4
+
+mixin logo_preload()
+    .bLogo.jsPreload.mMicro.mAnimated.mPreload
         .bLogo__eBG
         .bLogo__eL.m1
         .bLogo__eL.m2

@@ -66,6 +66,12 @@
         &.mFast .bLogo__eL {
             animation-delay: 0s;
         }
+        &.mPreload {
+            .bLogo__eL.m1 {animation: logo_r 6s 0s infinite linear;}
+            .bLogo__eL.m2 {animation: logo_l 6s 0s infinite linear;}
+            .bLogo__eL.m3 {animation: logo_r 6s 0s infinite linear;}
+            .bLogo__eL.m4 {animation: logo_l 6s 0s infinite linear;}
+        }
     }
     &.mHidden {
         opacity: 0;
@@ -86,6 +92,19 @@
 
         .bLogo__eBG, .bLogo__eL {
             background-size: 70px;
+        }
+    }
+    &.mMicro {
+        width: 50px;
+        height: 50px;
+        margin: 0;
+
+        &.mFull {
+            background-size: 50px;
+        }
+
+        .bLogo__eBG, .bLogo__eL {
+            background-size: 50px;
         }
     }
     @keyframes logo_r {

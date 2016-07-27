@@ -25,6 +25,7 @@ class Connecter
         @on 'add:passkey', @resolveIncoming
 
     run: (url)->
+        sid = _.uniqueId 'r'
         url = @options.url unless url
 
         @options.url = url
@@ -38,6 +39,7 @@ class Connecter
 
     reconnect: ->
         clearTimeout @_rcto if @_rcto
+        @trigger 'disconnect'
 
         @_rcto = setTimeout =>
             delete @_rcto
@@ -156,6 +158,7 @@ class Connecter
             ecdh: ecdh
             key:  null
 
+        console.log 'oha'
         @_send client, '/ecdh', k: pkey.toString('hex')
         @trigger 'add:client', client
 
@@ -170,7 +173,8 @@ class Connecter
             ecdh = crypto.createECDH @options.curve
             pkey = ecdh.generateKeys()
             @clients[client].ecdh = ecdh
-            @_send client, '/ecdh', k: pkey
+            console.log 'ocdh'
+            @_send client, '/ecdh', k: pkey.toString('hex')
 
         passkey = @clients[client].ecdh.computeSecret params.k, 'hex'
         @clients[client].key = passkey.toString('hex')

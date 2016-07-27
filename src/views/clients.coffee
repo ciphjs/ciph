@@ -36,6 +36,7 @@ class Contact extends CollectionItemView
 
     events: ->
         "click": "openClient"
+        "click .jsRemove": "removeClient"
 
     _bindData: ->
         super
@@ -73,6 +74,12 @@ class Contact extends CollectionItemView
 
         if currentClient is thisClient
             @$el.addClass 'mActive'
+
+    removeClient: (e)->
+        e.preventDefault()
+        e.stopPropagation()
+
+        @_getDataSource().destroy()
 
 
 _.extend Views,

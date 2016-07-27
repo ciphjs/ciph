@@ -51,7 +51,11 @@ class Controller extends Backbone.Model
 
     openClient: (client)->
         clientModel = @get('messenger').get('clients').get client
-        @set 'client', clientModel if clientModel
+
+        if clientModel
+            @stopListening @get('client') if @get('client')
+            @set 'client', clientModel
+            @listenTo @get('client'), 'destroy', -> @unset 'client'
 
     sendMessage: (text)->
         return unless text
