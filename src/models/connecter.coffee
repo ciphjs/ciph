@@ -174,6 +174,7 @@ class Connecter
 
         passkey = @clients[client].ecdh.computeSecret params.k, 'hex'
         @clients[client].key = passkey.toString('hex')
+        delete @clients[client].ecdh
 
         @trigger 'add:passkey', client, passkey
         @trigger 'ready:client', client

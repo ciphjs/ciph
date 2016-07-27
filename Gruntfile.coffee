@@ -166,7 +166,7 @@ module.exports = (grunt)->
                     icon:       './assets/icons/logo.icns'
                     name:       'Ciph'
                     ignore:     ['src/', 'docs/', 'build/', 'package/']
-                    version:    '0.36.7'
+                    version:    '1.3.1'
                     prune:      true
                     overwrite:  true
                     name:       'Ciph'
@@ -182,7 +182,7 @@ module.exports = (grunt)->
                     icon:       './assets/icons/logo.ico'
                     name:       'Ciph'
                     ignore:     ['src/', 'docs/', 'build/', 'package/']
-                    version:    '0.36.7'
+                    version:    '1.3.1'
                     prune:      true
                     overwrite:  true
                     name:       'Ciph'

@@ -25,6 +25,8 @@ class Controller extends Backbone.Model
         @listenTo @get('messenger'), 'ready', @addSavedClients
         @listenTo @get('messenger'), 'change:id chan:user_name change:user_id', @saveData
         @listenTo @get('messenger').get('clients'), 'add change remove reset', @saveClients
+        @listenTo @get('messenger').get('clients'), 'add', @onNewClient
+        @listenTo @get('messenger').get('clients'), 'update:messages', @onUpdateMessages
 
         window.onfocus = => @set 'winFocus', true
         window.onblur  = => @set 'winFocus', false
@@ -35,7 +37,7 @@ class Controller extends Backbone.Model
 
     newClient: (client)->
         return unless client
-        @get('messenger').connect client
+        @get('messenger').connect String(client).toLowerCase()
 
     openClient: (client)->
         clientModel = @get('messenger').get('clients').get client
@@ -77,6 +79,18 @@ class Controller extends Backbone.Model
             try return JSON.parse clients
 
         return {}
+
+    onNewClient: ->
+        @trigger 'newClients'
+
+    onUpdateMessages: ->
+        counter = 0
+
+        @get('messenger').get('clients').each (client)->
+            client.get('messages').each (message)->
+                counter++ if not message.get('self') and message.get('status') isnt 'readed'
+
+        @trigger 'unreadMessages', counter
 
 
 module.exports = Controller

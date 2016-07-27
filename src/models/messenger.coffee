@@ -23,14 +23,14 @@ class Messenger extends Backbone.Model
         @listenTo @connecter, 'ready:client', @addClient
         @listenTo @connecter, 'message',      @onMessage
 
-        @on 'change:user_id', @setGravatar
+        @on 'change:user_id change:user_name change:id', @setGravatar
 
     start: (id, url)->
         @set 'url', url if url
         @connecter.start @get('url'), id
 
     connect: (client_id, callback)->
-        @connecter.hello client_id, callback
+        @connecter.hello String(client_id).toLowerCase(), callback
 
     send: (client_id, data, force=false, callback)->
         @connecter.send client_id, JSON.stringify(data), force, callback
@@ -69,12 +69,12 @@ class Messenger extends Backbone.Model
     # TODO: "rename" method
 
     setGravatar: ->
-        if id = @get('user_id')
-            md5 = crypto.createHash 'md5'
-            md5.update id
-            hash = md5.digest 'hex'
+        id = @get('user_id') or @get('user_name') or @get('id') or 'Anonimus'
+        md5 = crypto.createHash 'md5'
+        md5.update id
+        hash = md5.digest 'hex'
 
-            @set 'gravatar', "https://www.gravatar.com/avatar/#{hash}?s=200&d=identicon"
+        @set 'gravatar', "https://www.gravatar.com/avatar/#{hash}?s=200&d=identicon"
 
     onReady: (id, exists=false)->
         @set id: id, status: 'online'

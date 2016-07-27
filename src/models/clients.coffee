@@ -17,7 +17,10 @@ class Client extends Backbone.Model
         @get('messages').messenger = @collection.messenger
         @get('messages').client    = @
 
+        @setGravatar()
+
         @on 'change:user_id', @setGravatar
+        @listenTo @get('messages'), 'add change remove destroy reset', @onNewMessageStatus
 
     addMessage: (message)->
         @get('messages').addMessage message
@@ -41,12 +44,16 @@ class Client extends Backbone.Model
         @_waitOffline()
 
     setGravatar: ->
-        if user_id = @get('user_id')
-            md5 = crypto.createHash 'md5'
-            md5.update user_id
-            id = md5.digest 'hex'
+        id = @get('user_id') or @get('user_name') or @get('id') or 'Anonimus'
+        md5 = crypto.createHash 'md5'
+        md5.update id
+        hash = md5.digest 'hex'
 
-            @set 'gravatar', "https://www.gravatar.com/avatar/#{id}?s=200&d=identicon"
+        @set 'gravatar', "https://www.gravatar.com/avatar/#{hash}?s=200&d=identicon"
+
+    onNewMessageStatus: ->
+        @trigger 'update:messages'
+        @collection.trigger 'update:messages'
 
     _waitOffline: ->
         clearTimeout @_offlineTO if @_offlineTO
