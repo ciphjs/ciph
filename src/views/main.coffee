@@ -2,7 +2,7 @@ $        = require('jquery')
 _        = require('underscore')
 Backbone = require('backbone')
 
-Views    = _.extend {}, require('./clients'), require('./messages')
+Views    = _.extend {}, require('./clients'), require('./messages'), require('./preferences')
 {ModelView} = require('./views')
 
 class MainView extends ModelView
@@ -20,9 +20,24 @@ class MainView extends ModelView
     events:
         "click .jsToAside": "toAside"
 
+    initialize: ->
+        super
+        $(window).bind 'keyup', _.bind @globalKeyup, @
+
     toAside: ->
-        console.log 'setar'
         @$('.jsLayout').addClass 'mAside'
+
+    openPreferences: ->
+        @$('.jsPreferences').addClass 'mOpen'
+
+    closePreferences: ->
+        @$('.jsPreferences').removeClass 'mOpen'
+
+    globalKeyup: (e)->
+        switch e.keyCode
+            when 27 then @model.trigger 'press:esc'
+
+        return true
 
 
 class StarterView extends ModelView
@@ -31,11 +46,13 @@ class StarterView extends ModelView
 
     events:
         "click .jsToggleAdvanced": "toggleAdvanced"
+        "keyup": "processID"
         "submit form": "submit"
 
     initialize: ->
         @on 'render', ->
             @$('input').eq(0).focus()
+            @processID()
             _.defer => @$('.jsLogo').removeClass('mHidden').addClass 'mAnimated'
             _.defer => @$('.jsForm').removeClass 'mHidden'
 
@@ -55,6 +72,11 @@ class StarterView extends ModelView
 
         @model.start readyData
         @$('input, button').attr 'disabled', true
+
+    processID: ->
+        id = @$('.jsID').val().trim()
+        id = id.replace /([^0-9A-z._-]+)/gi, ''
+        @$('.jsID').val id
 
 
 _.extend Views,

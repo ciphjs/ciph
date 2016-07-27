@@ -23,6 +23,7 @@ class Controller extends Backbone.Model
         @set 'view', new Views.Main model: @
 
         @listenTo @get('messenger'), 'ready', @addSavedClients
+        @listenTo @get('messenger'), 'ready', -> @trigger 'ready'
         @listenTo @get('messenger'), 'change:id chan:user_name change:user_id', @saveData
         @listenTo @get('messenger').get('clients'), 'add change remove reset', @saveClients
         @listenTo @get('messenger').get('clients'), 'add', @onNewClient
@@ -32,8 +33,17 @@ class Controller extends Backbone.Model
         window.onblur  = => @set 'winFocus', false
 
     start: (data)->
-        @get('messenger').set _.pick data, 'url', 'user_name', 'user_id'
+        @setPreferences data
         @get('messenger').start data.id
+
+    setPreferences: (data)->
+        @get('messenger').set _.omit data, 'id'
+
+    openPreferences: ->
+        @get('view').openPreferences()
+
+    closePreferences: ->
+        @get('view').closePreferences()
 
     newClient: (client)->
         return unless client

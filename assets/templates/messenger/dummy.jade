@@ -6,6 +6,10 @@ include ../includes/logo
 .bMessenger__eDummyHeader
     | Your ID:
     br
-    span.bMessenger__eDummyHeaderID #{id}
+    .bMessenger__eDummyID.jsText #{id}
+    .bMessenger__eDummyText Send it to your friend
 
-.bMessenger__eDummyText For starting chat, add friend ID,<br />or send your ID to friend.
+form.bMessenger__eDummyHeader
+    | or
+    br
+    input.bMessenger__eDummyInput.jsAddContact(placeholder="Enter friend ID")

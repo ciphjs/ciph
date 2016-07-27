@@ -8,24 +8,25 @@
 
     &__eAside {
         width: 320px;
+        min-width: 0;
     }
     &__eArticle {
         flex: 5 1 320px;
+        min-width: 0;
     }
 
     @media screen and (max-width: 650px){
         &__eAside, &__eArticle  {
-            position: relative;
-            left: -100%;
             width: 100%;
             min-width: 100%;
             flex: 0 1 auto;
 
             transition: 0.4s;
+            transform: translate(-100%);
         }
         &.mAside {
             .bLayout__eAside, .bLayout__eArticle {
-                left: 0;
+                transform: translate(0);
             }
         }
     }

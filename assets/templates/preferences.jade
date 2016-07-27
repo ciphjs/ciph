@@ -1,0 +1,29 @@
+form.bPreferences__eForm
+    img.bPreferences__eUserpic.jsGravatar(src=gravatar)
+
+    label.bPreferences__eGroup
+        span.bPreferences__eLabel Your ID
+            span.bPreferences__eLabelText It is your ID. You can't change it yet. Send it to your friend, for start chat.
+
+        input.bForm__eInput.mReadonly(name="id", placeholder="Your ID", value=id, readonly=true)
+
+    label.bPreferences__eGroup
+        span.bPreferences__eLabel Your Name
+        input.bForm__eInput(name="user_name", placeholder="Enter your name", value=user_name)
+
+    label.bPreferences__eGroup
+        span.bPreferences__eLabel Gravatar ID
+            span.bPreferences__eLabelText Your email in <a href="https://gravatar.com">Gravatar</a> or some text for random avatar.
+
+        input.bForm__eInput(name="user_id", placeholder="Enter gravatar ID", value=user_id)
+
+    label.bPreferences__eGroup
+        span.bPreferences__eLabel Status
+            span.bPreferences__eLabelText This status will shown in friends contact list.
+
+        select.bForm__eInput(name="status", value=status)
+            option(value="online") Online
+            option(value="offline") Offline
+            option(value="away") Away
+
+.bPreferences__eClose.jsClose

@@ -8,7 +8,7 @@ li.bContacts__eClient(data-id=id, class=id == current_client ? "mActive" : "")
             //- .bContacts__eClientPicAbbr(style="background-color: #"+id.slice(0,6)) #{name.slice(0,1)}
             .bContacts__eClientPicAbbr #{name.slice(0,1)}
 
-        .bContacts__eClientStatus(class="mStatus_"+status)
+        .bContacts__eClientStatus(class="mStatus_"+status, title=status.slice(0,1)+status.slice(1))
 
         if unread
             .bContacts__eClientUnread= unread > 999 ? ">999" : unread

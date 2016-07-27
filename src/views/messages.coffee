@@ -17,6 +17,29 @@ class MessengerDummy extends ModelView
     Views: -> Views
     template: -> AppTemplates.MessengerDummy
 
+    events: ->
+        "submit form": "submit"
+        "keyup .jsAddContact": "processID"
+
+    _bindData: ->
+        super
+        @listenTo @model.get('messenger').get('clients'), 'add', ->
+            $('.jsLayout').addClass 'mAside'
+
+    submit: (e)->
+        e?.preventDefault()
+        client = @$('.jsAddContact').val().trim()
+
+        if client
+            @model.newClient client
+            @$('.jsAddContact').val ''
+
+    processID: ->
+        id = @$('.jsAddContact').val().trim()
+        id = id.replace /([^0-9A-z._-]+)/gi, ''
+        @$('.jsAddContact').val id
+
+
 class MessengerHeader extends ModelView
     Views: -> Views
     template: -> AppTemplates.MessengerHeader
@@ -64,12 +87,25 @@ class Message extends CollectionItemView
 
         data.text = data.text.replace /<[^>]*?script[^>]*?>/gi, ""
         data.text = data.text.replace /<[^>]*?js:[^>]*?>/gi,    ""
+        data.text = @linkify data.text
 
         return data
 
     globals: ->
         moment = require('moment')
         return moment: moment
+
+    linkify: (inputText)->
+        replacePattern1 = /(\b(\w+):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim
+        replacedText = inputText.replace replacePattern1, '<a href="$1" target="_blank">$1</a>'
+
+        replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim
+        replacedText = replacedText.replace replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>'
+
+        replacePattern3 = /\b(([a-zA-Z0-9\-\_\.])+@[a-zA-Z0-9\-\_]+?(\.[a-zA-Z]{2,6})+)/gim
+        replacedText = replacedText.replace replacePattern3, '<a href="mailto:$1">$1</a>'
+
+        return replacedText
 
 
 class MessengerSend extends ModelView
@@ -79,12 +115,11 @@ class MessengerSend extends ModelView
     events:
         "keyup .jsMessage": "message"
         "keydown .jsMessage": "messageBlock"
+        "paste .jsMessage": "onPaste"
 
-    initialize: ->
+    _bindData: ->
         super
-        @on 'render', ->
-            @$('.jsMessage').focus()
-            _.defer -> window.getSelection().setPosition(0)
+        @on 'render', @focus
 
     message: (e)->
         if e.keyCode is 13 and not e.shiftKey
@@ -101,6 +136,35 @@ class MessengerSend extends ModelView
 
         @model.sendMessage text
         $field.html ''
+
+    onPaste: (e)->
+        e.stopPropagation()
+        e.preventDefault()
+
+        clipboardData = e.originalEvent.clipboardData or window.clipboardData
+        pastedData = clipboardData.getData('Text')
+
+        document.execCommand "insertHTML", false, pastedData
+
+    focus: ->
+        $el = @$('.jsMessage')
+        el = $el[0]
+        el.focus()
+
+        if typeof window.getSelection isnt "undefined" and typeof document.createRange isnt "undefined"
+            range = document.createRange()
+            range.selectNodeContents el
+            range.collapse false
+            sel = window.getSelection()
+            sel.removeAllRanges()
+            sel.addRange range
+            $el.html '<br>'
+
+        else if typeof document.body.createTextRange isnt "undefined"
+            textRange = document.body.createTextRange()
+            textRange.moveToElementText el
+            textRange.collapse false
+            textRange.select()
 
 
 _.extend Views,

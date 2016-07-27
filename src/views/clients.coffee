@@ -11,6 +11,7 @@ class NewContact extends ModelView
 
     events:
         "submit form": "submit"
+        "click .jsPreferences": "openPreferences"
 
     submit: (e)->
         e.preventDefault()
@@ -19,6 +20,9 @@ class NewContact extends ModelView
         if client
             @model.newClient client
             @$('.jsClient').val ''
+
+    openPreferences: ->
+        @model.openPreferences()
 
 
 class ContactList extends CollectionView

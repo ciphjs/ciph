@@ -10,7 +10,7 @@ module.exports = (grunt)->
     grunt.loadNpmTasks 'grunt-contrib-copy'
     grunt.loadNpmTasks 'grunt-contrib-watch'
     grunt.loadNpmTasks 'grunt-browserify'
-    grunt.loadNpmTasks 'grunt-electron-packager'
+    grunt.loadNpmTasks 'grunt-electron'
     grunt.loadNpmTasks 'node-srv'
 
     buildConfig = {}
@@ -156,7 +156,7 @@ module.exports = (grunt)->
                 'coffee:app'
             ]
 
-        'electron-packager':
+        electron:
             macos:
                 options:
                     platform:   'darwin'
@@ -166,10 +166,9 @@ module.exports = (grunt)->
                     icon:       './assets/icons/logo.icns'
                     name:       'Ciph'
                     ignore:     ['src/', 'docs/', 'build/', 'package/']
-                    version:    '1.3.1'
+                    version:    '1.3.0'
                     prune:      true
                     overwrite:  true
-                    name:       'Ciph'
                     'app-version': pkg.version
                     'app-copyright': pkg.author
 
@@ -182,10 +181,9 @@ module.exports = (grunt)->
                     icon:       './assets/icons/logo.ico'
                     name:       'Ciph'
                     ignore:     ['src/', 'docs/', 'build/', 'package/']
-                    version:    '1.3.1'
+                    version:    '1.3.0'
                     prune:      true
                     overwrite:  true
-                    name:       'Ciph'
                     'app-version': pkg.version
                     'app-copyright': pkg.author
 
@@ -208,3 +206,10 @@ module.exports = (grunt)->
     grunt.registerTask 'dev_srv', 'Init app for developing and start server', ->
         grunt.config.data.srv.build.keepalive = false
         grunt.task.run ['rebuild', 'srv:build', 'watch']
+
+    grunt.registerTask 'pack', 'Pack desktop app', (platform)->
+        if platform
+            grunt.task.run ['build:app', "electron:#{platform}"]
+
+        else
+            grunt.task.run ['build:app', "electron"]

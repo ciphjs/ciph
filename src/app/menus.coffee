@@ -2,8 +2,9 @@ electron = require 'electron'
 Menu     = electron.Menu
 pack     = require electron.app.getAppPath() + '/package.json'
 app      = electron.app
+ipcMain  = electron.ipcMain
 name     = app.getName()
-menu     = []
+appMenus = []
 macos    = process.platform is 'darwin'
 
 appMenu =
@@ -12,6 +13,12 @@ appMenu =
         label: 'About ' + name, role: 'about'
     ,
         type: 'separator'
+    ,
+        label: 'Preferences...'
+        accelerator: 'Command+,'
+        click: (item, focusedWin)->
+            # ipcMain.emit 'click:preferences'
+            focusedWin.send 'click:preferences'
     ,
         label: 'Services', role: 'services', submenu: []
     ,
@@ -30,7 +37,7 @@ appMenu =
         click: -> app.quit()
     ]
 
-menu.push appMenu if macos
+appMenus.push appMenu if macos
 
 
 editMenu =
@@ -51,7 +58,7 @@ editMenu =
         label: 'Select All', accelerator: 'CmdOrCtrl+A', role: 'selectall'
     ]
 
-menu.push editMenu
+appMenus.push editMenu
 
 
 viewMenu =
@@ -66,7 +73,7 @@ viewMenu =
         click: (item, focusedWin)-> focusedWin?.setFullScreen not focusedWin.isFullScreen()
     ]
 
-menu.push viewMenu
+appMenus.push viewMenu
 
 
 windowMenu =
@@ -82,7 +89,7 @@ if macos
     windowMenu.submenu.push type: 'separator'
     windowMenu.submenu.push label: 'Bring All to Front', role: 'front'
 
-menu.push windowMenu
+appMenus.push windowMenu
 
 
 helpMenu =
@@ -96,6 +103,8 @@ helpMenu =
         click: (item)-> electron.shell.openExternal(pack.repository.url)
     ]
 
-menu.push helpMenu
+appMenus.push helpMenu
 
-Menu.setApplicationMenu Menu.buildFromTemplate menu
+module.exports =
+    appMenus: appMenus
+    # contextEditable: Menu.buildFromTemplate copyMenu

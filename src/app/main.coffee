@@ -1,9 +1,8 @@
 electron = require('electron')
-app = electron.app
-ipc = electron.ipcMain
-BrowserWindow = electron.BrowserWindow
-macos = process.platform is 'darwin'
+menus    = require('./menus')
+{BrowserWindow, app, ipcMain, Menu} = electron
 
+macos = process.platform is 'darwin'
 mainWindow = null
 
 createWindow = ->
@@ -16,27 +15,24 @@ createWindow = ->
         title: 'Ciph'
 
     mainWindow.loadURL "file://#{__dirname}/index.html"
+    Menu.setApplicationMenu Menu.buildFromTemplate menus.appMenus
 
     # mainWindow.webContents.openDevTools()
-
-    ipc.on 'messageCount', (e, count)->
-        console.log 'mmmmmm', arguments
-        if typeof count is 'number'
-            app.setBadgeCount count
-
-    if macos
-        ipc.on 'clientChange', ->
-            mainWindow.removeAllListeners 'focus' # NOTE: bad solution
-
-            if mainWindow and not mainWindow.isFocused()
-                bID = app.dock.bounce 'informational'
-                mainWindow.once 'focus', ->
-                    app.dock.cancelBounce bID
-
     mainWindow.on 'closed', -> mainWindow = null
 
+    ipcMain.on 'messageCount', (e, count)->
+        app.setBadgeCount count if typeof count is 'number'
+
+    ipcMain.on 'clientChange', ->
+        if mainWindow and not mainWindow.isFocused() and macos
+            bID = app.dock.bounce 'informational'
+
+            mainWindow.removeAllListeners 'focus' # NOTE: bad solution
+            mainWindow.once 'focus', ->
+                app.dock.cancelBounce bID
+
+
 app.on 'ready', createWindow
-app.on 'ready', -> require('./menus')
 
 app.on 'window-all-closed', -> app.quit()
 

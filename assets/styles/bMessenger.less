@@ -18,17 +18,16 @@
 
             font-size: 3rem;
             text-align: center;
-
-            &ID {
-                display: inline-block;
-                margin-top: 0.2em;
-                padding: 3px 8px;
-                border-radius: 5px;
-                background-color: @color2;
-                color: @color1;
-                text-transform: uppercase;
-                letter-spacing: 0.07em;
-            }
+        }
+        &ID {
+            display: inline-block;
+            margin-top: 0.2em;
+            padding: 3px 8px;
+            border-radius: 5px;
+            background-color: @color2;
+            color: @color1;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
         }
         &Text {
             display: block;
@@ -37,6 +36,40 @@
             font-size: 1rem;
             text-align: center;
             color: lighten(@color2, 30%);
+        }
+        &Input {
+            display: inline-block;
+            width: 200px;
+            margin: 0.2em 0 0 0;
+            padding: 3px 8px;
+
+            background: @color1;
+            border: 1px solid @color2;
+            border-radius: 5px;
+
+            font-size: 3rem;
+            text-align: center;
+            line-height: normal;
+            color: @color2;
+
+            box-shadow: 0;
+            outline: 0;
+
+            &::-webkit-input-placeholder {
+                font-size: 0.75em;
+            }
+            &::-moz-placeholder {
+                font-size: 0.75em;
+            }
+            &:-moz-placeholder {
+                font-size: 0.75em;
+            }
+            &:-ms-placeholder {
+                font-size: 0.75em;
+            }
+            &::placeholder {
+                font-size: 0.75em;
+            }
         }
     }
     &__eHeader {
@@ -134,6 +167,7 @@
             font-size: 1.3rem;
             line-height: normal;
             color: @color2;
+            word-wrap: break-word;
 
             box-shadow: 0;
             outline: 0;
@@ -252,10 +286,10 @@
 
     @media screen and (max-width: 650px){
         .mMobileShow {
-            display: block;;
+            display: block;
         }
         .mMobileHide {
-            display: none;;
+            display: none;
         }
     }
 }

@@ -12,7 +12,7 @@
             | #{name}#{self ? " (you)" : ""}
             span.bMessenger__eMessageNameID= client.id
 
-        .bMessenger__eMessageText !{text}
+        .bMessenger__eMessageText.jsText !{text}
 
     .bMessenger__eMessageDate
         != globals.moment(date).format('HH:mm:ss')

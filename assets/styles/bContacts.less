@@ -21,12 +21,13 @@
     }
     &__eAddContact {
         display: flex;
-        margin: 10px 20px;
+        padding: 10px 20px;
+        box-sizing: border-box;
 
         &Input {
             display: block;
-            flex: 1 0 auto;
             height: 32px;
+            width: 100%;
             margin: 0;
             padding: 0 15px;
             box-sizing: border-box;
@@ -41,6 +42,11 @@
 
             box-shadow: 0;
             outline: 0;
+
+            &Wrap {
+                display: block;
+                flex: 1 1 auto;
+            }
         }
         &Button {
             display: block;
@@ -74,9 +80,23 @@
             &:hover {
                 background: @color2;
                 color: @color1;
+                border-color: @color1;
 
                 &:after {
                     .iconSVG('icon_plus', @color1);
+                }
+            }
+            &.mPreferences {
+                width: 32px;
+                border: 1px solid @color1;
+                border-radius: 5px;
+                margin-left: 5px;
+
+                &:after {
+                    .iconSVG('icon_settings', @color2);
+                }
+                &:hover:after {
+                    .iconSVG('icon_settings', @color1);
                 }
             }
         }
