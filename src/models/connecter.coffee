@@ -73,7 +73,7 @@ class Connecter
             @_send receiver, '/m', m: encrypted, force
             callback?() # TODO: callback on true send
 
-        cipher.write data
+        cipher.write data, 'utf8'
         cipher.end()
 
     hello: (receiver, callback)->
@@ -158,7 +158,6 @@ class Connecter
             ecdh: ecdh
             key:  null
 
-        console.log 'oha'
         @_send client, '/ecdh', k: pkey.toString('hex')
         @trigger 'add:client', client
 
@@ -173,7 +172,6 @@ class Connecter
             ecdh = crypto.createECDH @options.curve
             pkey = ecdh.generateKeys()
             @clients[client].ecdh = ecdh
-            console.log 'ocdh'
             @_send client, '/ecdh', k: pkey.toString('hex')
 
         passkey = @clients[client].ecdh.computeSecret params.k, 'hex'
