@@ -19,7 +19,7 @@ class Client extends Backbone.Model
 
         @setGravatar()
 
-        @on 'change:user_id', @setGravatar
+        @on 'change:user_id change:user_name change:id', @setGravatar
         @listenTo @get('messages'), 'add change remove destroy reset', @onNewMessageStatus
 
     addMessage: (message)->

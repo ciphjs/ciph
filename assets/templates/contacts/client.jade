@@ -5,7 +5,6 @@ li.bContacts__eClient(data-id=id, class=id == current_client ? "mActive" : "")
             img.bContacts__eClientPicImage(src=gravatar)
 
         else
-            //- .bContacts__eClientPicAbbr(style="background-color: #"+id.slice(0,6)) #{name.slice(0,1)}
             .bContacts__eClientPicAbbr #{name.slice(0,1)}
 
         .bContacts__eClientStatus(class="mStatus_"+status, title=status.slice(0,1).toUpperCase()+status.slice(1))
@@ -15,7 +14,7 @@ li.bContacts__eClient(data-id=id, class=id == current_client ? "mActive" : "")
 
     .bContacts__eClientBody
         .bContacts__eClientName
-            | #{name}
+            | #{name.slice(0, 32)}
             span.bContacts__eClientBodyID= id
 
         if message

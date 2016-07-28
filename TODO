@@ -1,3 +1,6 @@
-- Remove offline contacts
+- Resend undelivered messsages
+- Regenerate encryption keys (button and timeout)
+- Encoding problems in app
+- Emoji panel and send button for mobiles
 - Notifications for apps
-- Touch events
+- Touch events (?)

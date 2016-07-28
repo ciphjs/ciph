@@ -9,7 +9,7 @@
 
     .bMessenger__eMessageBody
         .bMessenger__eMessageName
-            | #{name}#{self ? " (you)" : ""}
+            | #{name.slice(0, 32)}#{self ? " (you)" : ""}
             span.bMessenger__eMessageNameID= client.id
 
         .bMessenger__eMessageText.jsText !{text}
