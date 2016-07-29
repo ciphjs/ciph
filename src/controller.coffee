@@ -3,6 +3,7 @@ _         = require('underscore')
 jade      = require('../assets/libs/jade-runtime')
 Backbone  = require('backbone')
 Messenger = require('./models/messenger')
+Notify    = require('./views/notifications')
 
 Views = require('./views/')
 
@@ -21,6 +22,7 @@ class Controller extends Backbone.Model
         @get('messenger').set savedData
 
         @set 'view', new Views.Main model: @
+        @set 'notify', new Notify @
 
         @listenTo @get('messenger'), 'ready', @addSavedClients
         @listenTo @get('messenger'), 'ready', -> @trigger 'ready'
@@ -28,9 +30,11 @@ class Controller extends Backbone.Model
         @listenTo @get('messenger').get('clients'), 'add change remove reset', @saveClients
         @listenTo @get('messenger').get('clients'), 'add', @onNewClient
         @listenTo @get('messenger').get('clients'), 'update:messages', @onUpdateMessages
+        @listenTo @get('messenger').get('clients'), 'new:messages', @onNewMessage
 
         window.onfocus = => @set 'winFocus', true
         window.onblur  = => @set 'winFocus', false
+        window.onunload = => @setOffline()
 
     start: (data)->
         @setPreferences data
@@ -60,6 +64,10 @@ class Controller extends Backbone.Model
     sendMessage: (text)->
         return unless text
         @get('client')?.sendMessage text
+
+    setOffline: ->
+        @get('messenger').heartbeat 'offline', false
+        return false
 
     addSavedClients: ->
         clients = @getSavedClients()
@@ -105,6 +113,14 @@ class Controller extends Backbone.Model
                 counter++ if not message.get('self') and message.get('status') isnt 'readed'
 
         @trigger 'unreadMessages', counter
+
+    onNewMessage: (client, message)->
+        name = client.get('name') or 'Anonimus'
+        gravatar = client.get('gravatar')
+        text = message.get('text')
+
+        if text and (not @get('winFocus') or client.get('id') isnt @get('client').get('id'))
+            @get('notify').notify name.slice(0, 40), text.slice(0, 200), gravatar
 
 
 module.exports = Controller

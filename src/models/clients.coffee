@@ -21,6 +21,7 @@ class Client extends Backbone.Model
 
         @on 'change:user_id change:user_name change:id', @setGravatar
         @listenTo @get('messages'), 'add change remove destroy reset', @onNewMessageStatus
+        @listenTo @get('messages'), 'add', @onNewMessage
 
     addMessage: (message)->
         @get('messages').addMessage message
@@ -54,6 +55,10 @@ class Client extends Backbone.Model
     onNewMessageStatus: ->
         @trigger 'update:messages'
         @collection.trigger 'update:messages'
+
+    onNewMessage: (message)->
+        unless message.get('self')
+            @collection.trigger 'new:messages', @, message
 
     _waitOffline: ->
         clearTimeout @_offlineTO if @_offlineTO

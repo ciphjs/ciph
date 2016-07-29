@@ -1,3 +1,4 @@
+- Fix recurcive ECDH exchange
 - Resend undelivered messsages
 - Regenerate encryption keys (button and timeout)
 - Emoji panel and send button for mobiles

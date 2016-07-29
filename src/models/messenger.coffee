@@ -35,9 +35,16 @@ class Messenger extends Backbone.Model
     send: (client_id, data, force=false, callback)->
         @connecter.send client_id, JSON.stringify(data), force, callback
 
-    sendAll: (data, force=false)->
+    sendSync: (client_id, data)->
+        return @connecter.sendSync client_id, JSON.stringify(data)
+
+    sendAll: (data, force=false, async=true)->
         @get('clients').each (client)=>
-            @send client.id, data, force
+            if async
+                @send client.id, data, force
+
+            else
+                @sendSync client.id, data
 
     message: (client_id, message, callback)->
         @send client_id,
@@ -54,7 +61,7 @@ class Messenger extends Backbone.Model
                 message_id: message_id
                 status: status
 
-    heartbeat: (status)->
+    heartbeat: (status, async=true)->
         status = @get('status') unless status
 
         @sendAll
@@ -64,7 +71,7 @@ class Messenger extends Backbone.Model
                 user_name: @get('user_name')
                 user_id: @get('user_id')
 
-        , true
+        , true, async
 
     # TODO: "rename" method
 

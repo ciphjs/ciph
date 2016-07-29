@@ -76,6 +76,16 @@ class Connecter
         cipher.write data, 'utf8'
         cipher.end()
 
+    sendSync: (receiver, data)->
+        return false unless @isReadyClient receiver
+
+        cipher = crypto.createCipher @options.cipher, @clients[receiver].key
+        encrypted = cipher.update data, 'utf8', 'hex'
+        encrypted += cipher.final 'hex'
+
+        @_send receiver, '/m', m: encrypted, true
+        return true
+
     hello: (receiver, callback)->
         @_send receiver, '/hello'
 
