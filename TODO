@@ -2,5 +2,7 @@
 - Resend undelivered messsages
 - Regenerate encryption keys (button and timeout)
 - Emoji panel and send button for mobiles
-- Notifications for apps
+- Mobile improvements
 - Touch events (?)
+- Background process
+- Fast start

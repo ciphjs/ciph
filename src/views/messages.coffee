@@ -152,7 +152,7 @@ class MessengerSend extends ModelView
         e.preventDefault()
 
         clipboardData = e.originalEvent.clipboardData or window.clipboardData
-        pastedData = clipboardData.getData('Text')
+        pastedData = clipboardData.getData('Text').replace /[\f\r\n]/gim, '<br>'
 
         document.execCommand "insertHTML", false, pastedData
 

@@ -1,3 +1,4 @@
+$         = require('jquery')
 _         = require('underscore')
 Backbone  = require('backbone')
 
@@ -18,6 +19,8 @@ class Notifications
 
     notify: (title, body, icon)->
         if @_n.permission is "granted" and title
+            body = body.replace /<br(\s?\/?)>/, '\n'
+            body = $('<div></div>').html(body).text()
             new @_n title,
                 title: title
                 body: body

@@ -115,7 +115,7 @@ class Controller extends Backbone.Model
         @trigger 'unreadMessages', counter
 
     onNewMessage: (client, message)->
-        name = client.get('name') or 'Anonimus'
+        name = client.get('user_name') or 'Anonimus'
         gravatar = client.get('gravatar')
         text = message.get('text')
 

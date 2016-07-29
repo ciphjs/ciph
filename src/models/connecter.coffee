@@ -60,21 +60,16 @@ class Connecter
 
     send: (receiver, data, force=false, callback)->
         unless @isReadyClient receiver
-            return callback? 'no_client'
+            callback? 'no_client'
+            return false
 
         cipher = crypto.createCipher @options.cipher, @clients[receiver].key
-        encrypted = ''
+        encrypted = cipher.update data, 'utf8', 'hex'
+        encrypted += cipher.final 'hex'
 
-        cipher.on 'readable', ->
-            chunk = cipher.read()
-            encrypted += chunk.toString 'hex' if chunk
-
-        cipher.on 'end', =>
-            @_send receiver, '/m', m: encrypted, force
-            callback?() # TODO: callback on true send
-
-        cipher.write data, 'utf8'
-        cipher.end()
+        @_send receiver, '/m', m: encrypted, force
+        callback?()
+        return true
 
     sendSync: (receiver, data)->
         return false unless @isReadyClient receiver
@@ -196,17 +191,10 @@ class Connecter
         return @hello mes.auth unless @isReadyClient mes.auth
 
         decipher = crypto.createDecipher @options.cipher, @getKey mes.auth
-        decrypted = ''
+        decrypted  = decipher.update mes.query.m, 'hex', 'utf8'
+        decrypted += decipher.final 'utf8'
 
-        decipher.on 'readable', ->
-            chunk = decipher.read()
-            decrypted += chunk.toString 'utf8' if chunk
-
-        decipher.on 'end', =>
-            @trigger 'message', mes.auth, decrypted
-
-        decipher.write mes.query.m, 'hex'
-        decipher.end()
+        @trigger 'message', mes.auth, decrypted
 
 
 module.exports = Connecter
