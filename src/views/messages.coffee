@@ -57,6 +57,7 @@ class Messages extends CollectionView
     _bindData: ->
         super
         @listenTo @_getDataSource(), 'add change remove', @scrollDown
+        @on 'render', -> _.defer => @scrollDown()
 
     scrollDown: ->
         list = @$('.jsMessages')[0]
