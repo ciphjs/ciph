@@ -10,6 +10,7 @@ class Messenger extends ModelView
     template: -> AppTemplates.MessengerLayout
 
     _bindData: ->
+        super
         @listenTo @model, 'change:client', @render
 
 
@@ -53,6 +54,14 @@ class Messages extends CollectionView
     Views: -> Views
     template: -> AppTemplates.MessengerMessages
 
+    _bindData: ->
+        super
+        @listenTo @_getDataSource(), 'add change remove', @scrollDown
+
+    scrollDown: ->
+        list = @$('.jsMessages')[0]
+        list.scrollTop = list.scrollHeight
+
 
 class Message extends CollectionItemView
     Views: -> Views
@@ -63,6 +72,7 @@ class Message extends CollectionItemView
 
         @on 'render', -> @setReaded()
         @listenTo @model.get('client'), 'change', @render
+        @listenTo @model.get('messenger'), 'change', @render
 
     setReaded: ->
         return if @_getDataSource().get('status') is 'readed'

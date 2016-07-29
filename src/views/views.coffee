@@ -50,6 +50,7 @@ class ModelView extends Backbone.View
                 el: el
                 model: @model
                 dataSource: data.source
+                parent: @
 
             @partials.push partial
 
