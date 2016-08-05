@@ -2,15 +2,16 @@ module.exports = (grunt)->
     os   = require 'os'
     _    = require 'underscore'
     path = require 'path'
+    jade = require 'jade'
 
     grunt.loadNpmTasks 'grunt-contrib-clean'
     grunt.loadNpmTasks 'grunt-contrib-coffee'
     grunt.loadNpmTasks 'grunt-contrib-less'
-    grunt.loadNpmTasks 'grunt-contrib-jade'
     grunt.loadNpmTasks 'grunt-contrib-copy'
-    grunt.loadNpmTasks 'grunt-contrib-watch'
     grunt.loadNpmTasks 'grunt-browserify'
+    grunt.loadNpmTasks 'grunt-contrib-watch'
     grunt.loadNpmTasks 'grunt-electron'
+    grunt.loadNpmTasks 'grunt-release'
     grunt.loadNpmTasks 'node-srv'
 
     buildConfig = {}
@@ -26,10 +27,10 @@ module.exports = (grunt)->
 
         browserify:
             options:
-                transform: ['coffeeify']
+                transform: ['coffeeify', 'jadeify']
                 browserifyOptions:
                     bare: true
-                    extensions: ['.coffee']
+                    extensions: ['.coffee', '.jade', '.js']
 
             web:
                 files:
@@ -41,6 +42,7 @@ module.exports = (grunt)->
                     join: false
                     sourceMap: false
                     bare: true
+
                 files: [
                     {
                         expand: true
@@ -59,31 +61,16 @@ module.exports = (grunt)->
                 ]
 
         jade:
-            options:
-                client: true
-                namespace: 'AppTemplates'
-                processName: (filename)->
-                    filename = filename.replace("assets/templates/", '').split('/')
-                    templateName = ''
-
-                    for part in filename
-                        templateName += part.slice(0,1).toUpperCase() + part.slice(1)
-
-                    templateName = templateName.replace(/\.jade$/, '')
-
-                    return templateName
-
-                processContent: (content, srcpath)->
-                    settings = _.omit grunt.config.data.settings.build, (value, key, object)->
-                        return _.isObject(value)
-
-                    return grunt.template.process(content, {data: settings})
-
-            web:
-                files: "build/templates.js": ["assets/templates/**/*.jade"]
-
             app:
-                files: "app/templates.js": ["assets/templates/**/*.jade"]
+                files: [
+                    {
+                        expand: true
+                        cwd: 'src/templates'
+                        src: ['**/*.jade']
+                        dest: 'app/templates/'
+                        ext: '.js'
+                    }
+                ]
 
         less:
             web:
@@ -129,7 +116,7 @@ module.exports = (grunt)->
                     interrupt: true
 
             jade:
-                files: ['assets/templates/**/*.jade']
+                files: ['src/templates/**/*.jade']
                 tasks: ['jade:web']
                 options:
                     interrupt: true
@@ -143,7 +130,6 @@ module.exports = (grunt)->
         build:
             web: [
                 'clean:build'
-                'jade:web'
                 'less:web'
                 'copy:web'
                 'browserify:web'
@@ -166,7 +152,7 @@ module.exports = (grunt)->
                     icon:       './assets/icons/logo.icns'
                     name:       'Ciph'
                     ignore:     ['src/', 'docs/', 'build/', 'package/']
-                    version:    '1.3.0'
+                    version:    '1.3.2'
                     prune:      true
                     overwrite:  true
                     'app-version': pkg.version
@@ -181,7 +167,7 @@ module.exports = (grunt)->
                     icon:       './assets/icons/logo.ico'
                     name:       'Ciph'
                     ignore:     ['src/', 'docs/', 'build/', 'package/']
-                    version:    '1.3.0'
+                    version:    '1.3.2'
                     prune:      true
                     overwrite:  true
                     'app-version': pkg.version
@@ -192,6 +178,18 @@ module.exports = (grunt)->
                 port: 8181
                 logs: false
                 root: './build'
+
+        release:
+            options:
+                tagName: 'v<%= version %>'
+                commitMessage: 'New version v<%= version %>'
+                npm: false
+                npmtag: false
+                push: true
+                pushTags: true
+                github:
+                    repo: 'ciphjs/ciph'
+                    accessTokenVar: 'GH_TOKEN_REPO'
 
 
     grunt.registerMultiTask 'build', 'Build app', ->
@@ -213,3 +211,19 @@ module.exports = (grunt)->
 
         else
             grunt.task.run ['build:app', "electron"]
+
+    grunt.registerMultiTask 'jade', 'Compile jade to nodejs files', ->
+        separator = grunt.util.linefeed + grunt.util.linefeed
+
+        @files.forEach (file)->
+            tmpl = jade.compileFileClient file.src[0]
+
+            output = []
+            output.push "var jade = jade || require('jade').runtime;"
+            output.push "var tmpl = #{tmpl};"
+            output.push "if (typeof exports === 'object' && exports) {module.exports = tmpl;}"
+
+            grunt.file.write file.dest, output.join grunt.util.normalizelf separator
+            grunt.verbose.writeln 'File ' + file.dest + ' created.'
+
+        grunt.log.ok @files.length + ' ' + grunt.util.pluralize(@files.length, 'file/files') + ' created.'

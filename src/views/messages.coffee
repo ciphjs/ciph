@@ -7,7 +7,7 @@ Views    = {}
 
 class Messenger extends ModelView
     Views: -> Views
-    template: -> AppTemplates.MessengerLayout
+    template: -> require('../templates/messenger/layout')
 
     _bindData: ->
         super
@@ -16,7 +16,7 @@ class Messenger extends ModelView
 
 class MessengerDummy extends ModelView
     Views: -> Views
-    template: -> AppTemplates.MessengerDummy
+    template: -> require('../templates/messenger/dummy')
 
     events: ->
         "submit form": "submit"
@@ -43,7 +43,7 @@ class MessengerDummy extends ModelView
 
 class MessengerHeader extends ModelView
     Views: -> Views
-    template: -> AppTemplates.MessengerHeader
+    template: -> require('../templates/messenger/header')
 
     _bindData: ->
         super
@@ -52,7 +52,7 @@ class MessengerHeader extends ModelView
 
 class Messages extends CollectionView
     Views: -> Views
-    template: -> AppTemplates.MessengerMessages
+    template: -> require('../templates/messenger/messages')
 
     _bindData: ->
         super
@@ -66,7 +66,7 @@ class Messages extends CollectionView
 
 class Message extends CollectionItemView
     Views: -> Views
-    template: -> AppTemplates.MessengerMessage
+    template: -> require('../templates/messenger/message')
 
     _bindData: ->
         super
@@ -121,7 +121,7 @@ class Message extends CollectionItemView
 
 class MessengerSend extends ModelView
     Views: -> Views
-    template: -> AppTemplates.MessengerSend
+    template: -> require('../templates/messenger/send')
 
     events:
         "keyup .jsMessage": "message"

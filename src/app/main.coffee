@@ -4,6 +4,7 @@ menus    = require('./menus')
 
 macos = process.platform is 'darwin'
 mainWindow = null
+onQuit = false
 
 createWindow = ->
     mainWindow = new BrowserWindow
@@ -18,7 +19,12 @@ createWindow = ->
     Menu.setApplicationMenu Menu.buildFromTemplate menus.appMenus
 
     # mainWindow.webContents.openDevTools()
-    mainWindow.on 'closed', -> mainWindow = null
+    mainWindow.on 'close', (e)->
+        unless onQuit
+            e.preventDefault()
+            mainWindow.hide()
+
+    mainWindow.on 'closed', (e)-> mainWindow = null
 
     ipcMain.on 'messageCount', (e, count)->
         app.setBadgeCount count if typeof count is 'number'
@@ -33,9 +39,12 @@ createWindow = ->
 
 
 app.on 'ready', createWindow
-
-app.on 'window-all-closed', -> app.quit()
+app.on 'before-quit', -> onQuit = true
+app.on 'window-all-closed', -> app.quit() unless macos
 
 app.on 'activate', ->
     if mainWindow is null
         createWindow()
+
+    else
+        mainWindow.show()

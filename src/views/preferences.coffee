@@ -8,7 +8,7 @@ Views    = {}
 
 class Preferences extends ModelView
     Views: -> Views
-    template:  -> AppTemplates.Preferences
+    template:  -> require('../templates/preferences')
 
     events: ->
         "change input": "onChange"

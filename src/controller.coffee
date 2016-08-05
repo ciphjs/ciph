@@ -1,13 +1,10 @@
 $         = require('jquery')
 _         = require('underscore')
-jade      = require('../assets/libs/jade-runtime')
 Backbone  = require('backbone')
 Messenger = require('./models/messenger')
 Notify    = require('./views/notifications')
 
 Views = require('./views/')
-
-global.jade = jade
 
 class Controller extends Backbone.Model
     defaults: ->

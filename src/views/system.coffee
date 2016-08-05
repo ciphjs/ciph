@@ -11,7 +11,7 @@ class System extends ModelView
         disconnect: false
 
     Views: -> Views
-    template:  -> AppTemplates.SystemLayout
+    template:  -> require('../templates/system/layout')
 
     initialize: ->
         @on 'render', @checkOpen
@@ -52,7 +52,7 @@ class System extends ModelView
 
 class SystemDisconnect extends ModelView
     Views: -> Views
-    template:  -> AppTemplates.SystemDisconnect
+    template:  -> require('../templates/system/disconnect')
 
 
 _.extend Views,

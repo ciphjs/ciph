@@ -7,7 +7,7 @@ Views    = {}
 
 class NewContact extends ModelView
     Views: -> Views
-    template: -> AppTemplates.ContactsNew
+    template: -> require('../templates/contacts/new')
 
     events:
         "submit form": "submit"
@@ -27,12 +27,12 @@ class NewContact extends ModelView
 
 class ContactList extends CollectionView
     Views: -> Views
-    template: -> AppTemplates.ContactsList
+    template: -> require('../templates/contacts/list')
 
 
 class Contact extends CollectionItemView
     Views: -> Views
-    template: -> AppTemplates.ContactsClient
+    template: -> require('../templates/contacts/client')
 
     events: ->
         "click": "openClient"

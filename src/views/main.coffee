@@ -11,7 +11,7 @@ class MainView extends ModelView
     Views: -> Views
 
     _defaults: -> dataSource: 'messenger'
-    template:  -> AppTemplates.Main
+    template:  -> require('../templates/main')
 
     _bindData: ->
         source = @_getDataSource()
@@ -42,7 +42,7 @@ class MainView extends ModelView
 
 class StarterView extends ModelView
     Views: -> Views
-    template:  -> AppTemplates.Starter
+    template:  -> require('../templates/starter')
 
     events:
         "click .jsToggleAdvanced": "toggleAdvanced"
